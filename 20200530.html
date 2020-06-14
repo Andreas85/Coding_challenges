@@ -1,0 +1,62 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+function startAnimation() {
+  var c = document.getElementById('mycanvas');
+  var ctx = c.getContext('2d');
+
+  var i = 0;
+  var j = 0;
+  var colorIndex = 0;
+  var colors = Array('#D0FA58', '#5F04B4', '#FF00BF', '#F6CEE3', '#8A2908', '#F5A9A9', '#0B3B0B', '#0000FF');
+
+  function myLoop () {
+    setTimeout(function () {
+      i++;
+      j++;
+
+      if (i < 100000) {
+        myLoop();
+      }
+
+      if (j < 250) {
+        ctx.strokeStyle = colors[colorIndex];
+        ctx.beginPath();
+        if (colorIndex > 6) {
+          ctx.moveTo(j*7, 0);
+          ctx.lineTo(j*2, 300);
+        } else if ( colorIndex > 4) {
+          ctx.moveTo(0, j*7);
+          ctx.lineTo(300, j*2);
+        } else if ( colorIndex > 2) {
+          ctx.moveTo(0, j*7);
+          ctx.lineTo(300, 300-(j*2));
+        } else {
+          ctx.moveTo(500-(j*7), 0);
+          ctx.lineTo(500-(j*2), 300);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      } else {
+        j = 0;
+        colorIndex = Math.floor(Math.random() * Math.floor(8));
+      }
+    }, 20)
+  }
+  myLoop(); 
+}
+</script>
+<style>
+#mycanvas {
+  border: 1px solid yellow;
+}
+body {
+  text-align: center;
+  margin-top: 200px;
+}
+</style>
+
+<body style="background:black">
+  <canvas id="mycanvas" width="500" height="300"></canvas>
+  <br>
+  <input type="button" value="Starta" onclick="startAnimation()">
+</body>

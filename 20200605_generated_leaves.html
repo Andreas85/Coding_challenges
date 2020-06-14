@@ -1,0 +1,139 @@
+<html lang=en>
+<head>
+  <meta charset=utf-8>
+  <title>Generated leaves</title>
+<style>
+  #mycanvas {
+    border: 1px solid purple;
+  }
+  body {
+    text-align: center;
+    margin-top: 200px;
+  }
+  #debug {
+    display: none;
+    width: 400px;
+    height: 600px;
+    background: white;
+    position: absolute;
+    right: 0px;
+    top: 150px;
+    border: 3px solid gray;
+    text-align: left;
+  }
+</style>
+</head>
+
+<body style="background:black">
+  <canvas id="mycanvas" width="600" height="500"></canvas>
+  <div id="debug"></div>
+  <br>
+  <input type="button" value="Starta" onclick="init()">
+  <input type="button" value="Stoppa" onclick="stop()">
+</body>
+
+<script>
+  var canvas, ctx, container;
+  canvas = document.getElementById('mycanvas');
+  ctx = canvas.getContext("2d");
+  var debug = document.getElementById('debug');
+  var intervalId;
+
+  var centerX = canvas.width/2;
+  var centerY = canvas.height/2;
+
+  var tempX, tempY;
+
+  var pointerLineLength = 100;
+  var pointerLine = { 
+    'startX': centerX,
+    'startY': centerY,
+    'endX': centerX,
+    'endY': centerY - 200,
+    'length': 200,
+    'angle': 0
+  };
+
+  var leaves = Array();
+ 
+  function init(){
+    intervalId = setInterval(draw, 50); 
+  }
+
+  function toRadians (angle) {
+    return angle * (Math.PI / 180);
+  }
+
+  function drawLeaf(angle) {
+    var leafAngle = angle;
+
+    var leafX = Math.sin(toRadians(leafAngle)) * pointerLine.length;
+    var leafY = Math.cos(toRadians(leafAngle)) * pointerLine.length;
+
+    var leafLeftAngle = leafAngle - 40;
+    var leafLeftLength = 70;
+    var leafLeftX = Math.sin(toRadians(leafLeftAngle)) * leafLeftLength;
+    var leafLeftY = Math.cos(toRadians(leafLeftAngle)) * leafLeftLength;
+
+    var leafRightAngle = leafAngle + 40;
+    var leafRightLength = 70;
+    var leafRightX = Math.sin(toRadians(leafRightAngle)) * leafRightLength;
+    var leafRightY = Math.cos(toRadians(leafRightAngle)) * leafRightLength;
+
+    ctx.strokeStyle = 'green';
+    ctx.fillStyle = 'green';
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.quadraticCurveTo(centerX + leafLeftX, centerY - leafLeftY, centerX + leafX, centerY - leafY);
+
+    ctx.moveTo(centerX, centerY);
+    ctx.quadraticCurveTo(centerX + leafRightX, centerY - leafRightY, centerX + leafX, centerY - leafY);
+
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 10, 0, 2 * Math.PI, false);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'white';
+    ctx.stroke();
+
+    // Calculate new line position
+    tempX = Math.sin(toRadians(pointerLine.angle)) * pointerLine.length;
+    tempY = Math.cos(toRadians(pointerLine.angle)) * pointerLine.length;
+
+    leaves.forEach(function(item, index){
+      drawLeaf(item);
+    });
+
+    ctx.beginPath();
+    ctx.moveTo(pointerLine.startX, pointerLine.startY);
+    ctx.lineTo(centerX + tempX, centerY - tempY);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    if (Math.round(pointerLine.angle / 137.5) >= leaves.length + 1) {
+      var lastLeafAngle = leaves[leaves.length - 1] == undefined ? 0 : leaves[leaves.length - 1];
+      leaves.push(lastLeafAngle + 137.5);
+    }
+    pointerLine.angle += 9;
+
+    debug.innerHTML = 
+      'pointerLine.angle: ' + pointerLine.angle + 
+      '<br>tempX: ' + tempX+ 
+      '<br>tempY: ' + tempY; 
+  }
+
+  function stop() {
+    clearInterval(intervalId);
+  }
+</script>

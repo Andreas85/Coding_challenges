@@ -1,0 +1,114 @@
+<html lang=en>
+<head>
+  <meta charset=utf-8>
+  <title>Javascript gravity</title>
+<style>
+  #mycanvas {
+    border: 1px solid purple;
+  }
+  body {
+    text-align: center;
+    margin-top: 200px;
+  }
+  #debug {
+    display: none;
+    width: 400px;
+    height: 600px;
+    background: white;
+    position: absolute;
+    right: 0px;
+    top: 150px;
+    border: 3px solid gray;
+    text-align: left;
+  }
+</style>
+</head>
+
+<body style="background:black">
+  <canvas id="mycanvas" width="600" height="500"></canvas>
+  <div id="debug"></div>
+  <br>
+  <input type="button" value="Starta" onclick="init()">
+</body>
+
+
+<script>
+  var canvas, ctx, container;
+  canvas = document.getElementById('mycanvas');
+  ctx = canvas.getContext("2d");
+  var ball;
+  var debug = document.getElementById('debug');
+  var intervalId;
+ 
+  var vx, vy, gravity, bounce, friction;
+    
+  function init(){
+    vx = 5.0;
+    vy = -7.0;
+      
+    gravity = 0.5;  
+    bounce = 0.7; 
+    friction = 0.1;
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+
+    ball = {x: 400, y:200, radius: 50};
+    intervalId = setInterval(draw, 30); 
+  }
+ 
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2, false);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.stroke();
+
+    moveBall();
+  }
+ 
+    
+  function moveBall(){
+    ball.x += vx;
+    ball.y += vy;
+    vy += gravity;
+
+    if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+      vx *= -1;
+    }
+
+    if (ball.y + ball.radius > canvas.height) {
+      vy *= -bounce;
+
+      if (vy < 0 && vy > -2.1) {
+        vy = 0;
+      }
+
+      if (vx < 0.3 && vx > -0.3) {
+        vx = 0;
+        clearInterval(intervalId);
+        return false;
+        console.log('vx 1: ' + vx);
+      } else if (vx > 0) {
+        vx -= friction;
+        console.log('vx 2: ' + vx);
+      } else {
+        vx += friction;
+        console.log('vx 3: ' + vx);
+      }
+    }
+    
+    debug.innerHTML = 
+      'ball.x: ' + ball.x + 
+      'ball.y: ' + ball.y + 
+      '<br>vx: ' + vx +
+      '<br>vy: ' + vy +
+      '<br>ball.x: ' + ball.x + 
+      '<br>ball.y: ' + ball.y + 
+      '<br>canvas.width: ' + canvas.width +
+      '<br>canvas.height: ' + canvas.height;
+  }
+</script>

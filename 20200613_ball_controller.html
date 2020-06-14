@@ -1,0 +1,144 @@
+<html lang=en>
+<head>
+  <meta charset=utf-8>
+  <title>Ball controller</title>
+<style>
+  #mycanvas {
+    border: 1px solid purple;
+  }
+  body {
+    text-align: center;
+    margin-top: 200px;
+  }
+  #debug {
+    display: none;
+    width: 400px;
+    height: 600px;
+    background: white;
+    position: absolute;
+    right: 0px;
+    top: 150px;
+    border: 3px solid gray;
+    text-align: left;
+  }
+
+  .ballControl {
+    display: none;
+  }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body style="background:black">
+  <canvas id="mycanvas" width="600" height="500"></canvas>
+  <div id="debug"></div>
+  <br>
+  <input type="button" class="startButton" value="Starta" onclick="init()">
+  <input type="button" class="ballControl" value="Stoppa" onclick="stop()">
+  <input type="button" class="ballControl" value="Öka deltaX" onclick="increaseDeltaX()">
+  <input type="button" class="ballControl" value="Öka deltaY" onclick="increaseDeltaY()">
+  <input type="button" class="ballControl" value="Byt färg" onclick="changeBallColor()">
+  <input type="button" class="ballControl" value="Öka storlek" onclick="increaseBallSize()">
+  <input type="button" class="ballControl" value="Minska storlek" onclick="decreaseBallSize()">
+</body>
+
+<script>
+  var canvas, ctx, container;
+  canvas = document.getElementById('mycanvas');
+  ctx = canvas.getContext("2d");
+  var debug = document.getElementById('debug');
+  var intervalId;
+
+  var centerX = canvas.width/2;
+  var centerY = canvas.height/2;
+
+  var ball = {'x': centerX, 'y': centerY, 'width': 20, 'deltaX': 4, 'deltaY': 10, 'directionX': 1, 'directionY': 1, 'color': '#ffffff'};
+ 
+  function init(){
+    $('.ballControl').show();
+    $('.startButton').hide();
+    logWithAjax();
+    intervalId = setInterval(draw, 50); 
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.width, 0, 2 * Math.PI, false);
+    ctx.fillStyle = ball.color;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = ball.color;
+    ctx.stroke();
+
+    ball.x += ball.deltaX * ball.directionX;
+    ball.y += ball.deltaY * ball.directionY;
+
+    if (ball.x >= canvas.width || ball.x <= 0) {
+      ball.directionX *= -1;
+    }
+    if (ball.y <= 0 || ball.y >= canvas.height) {
+      ball.directionY *= -1;
+    }
+
+    debug.innerHTML = 
+      'ball.directionX: ' + ball.directionX+ 
+      '<br>ball.directionY: ' + ball.directionY + 
+      '<br>ball.x: ' + ball.x + 
+      '<br>ball.y: ' + ball.y + 
+      '<br>canvas.width: ' + canvas.width + 
+      '<br>canvas.height: ' + canvas.height + 
+      '<br>deltaX: ' + ball.deltaX + 
+      '<br>deltaY: ' + ball.deltaY + 
+      '<br>tempY: ' + 12312 ; 
+  }
+
+  function stop() {
+    clearInterval(intervalId);
+    $('.ballControl').hide();
+    $('.startButton').show();
+  }
+
+  function increaseDeltaX() {
+    ball.deltaX++;
+  }
+
+  function increaseDeltaY() {
+    ball.deltaY++;
+  }
+
+  function changeBallColor() {
+    var letters = '1234567890ABCDEF';
+    var color = '#';
+
+    for (var a=0; a<6; a++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    ball.color = color;
+  }
+
+  function increaseBallSize() {
+    ball.width++;
+  }
+
+  function decreaseBallSize() {
+    ball.width--;
+  }
+
+  function logWithAjax() {
+    $.ajax({
+      url: "../logger.php",
+      type: "post",
+      data: {
+        page: window.location.pathname,
+      },
+      success: function (response) {
+        console.log(response);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+         console.log(textStatus, errorThrown);
+      }
+    });
+  }
+</script>

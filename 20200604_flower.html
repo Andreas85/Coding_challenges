@@ -1,0 +1,203 @@
+<html lang=en>
+<head>
+  <meta charset=utf-8>
+  <title>Flower</title>
+<style>
+  #mycanvas {
+    border: 1px solid purple;
+  }
+  body {
+    text-align: center;
+    margin-top: 200px;
+  }
+  #debug {
+    display: none;
+    width: 400px;
+    height: 600px;
+    background: white;
+    position: absolute;
+    right: 0px;
+    top: 150px;
+    border: 3px solid gray;
+    text-align: left;
+  }
+</style>
+</head>
+
+<body style="background:black">
+  <canvas id="mycanvas" width="600" height="500"></canvas>
+  <div id="debug"></div>
+  <br>
+  <input type="button" value="Starta" onclick="init()">
+  <input type="button" value="Stoppa" onclick="stop()">
+</body>
+
+
+<script>
+  var canvas, ctx, container;
+  canvas = document.getElementById('mycanvas');
+  ctx = canvas.getContext("2d");
+  var ball;
+  var debug = document.getElementById('debug');
+  var intervalId;
+ 
+  var stemBottomX = 250;
+  var stemBottomY = 500;
+  var stemTopX = stemBottomX;
+  var stemTopY = stemBottomY;
+  var flowerCenterX = 300;
+  var flowerCenterY = 290;
+
+  var flowerPetal1X = flowerCenterX;
+  var flowerPetal1Y = flowerCenterY;
+  var flowerPetal2X = flowerCenterX;
+  var flowerPetal2Y = flowerCenterY;
+  var flowerPetal3X = flowerCenterX;
+  var flowerPetal3Y = flowerCenterY;
+  var flowerPetal4X = flowerCenterX;
+  var flowerPetal4Y = flowerCenterY;
+  var flowerPetal5X = flowerCenterX;
+  var flowerPetal5Y = flowerCenterY;
+  var flowerPetal6X = flowerCenterX;
+  var flowerPetal6Y = flowerCenterY;
+  var flowerPetal7X = flowerCenterX;
+  var flowerPetal7Y = flowerCenterY;
+  var flowerPetal8X = flowerCenterX;
+  var flowerPetal8Y = flowerCenterY;
+
+  var flowerPetalWidth = 0;
+    
+  function init(){
+    intervalId = setInterval(draw, 50); 
+  }
+
+  function calculateStemLength() {
+    var xd = stemBottomX - stemTopX;
+    var yd = stemBottomY - stemTopY;
+
+    return Math.sqrt(Math.pow(xd, 2) + Math.pow(yd, 2));
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Animate flower stem
+    ctx.beginPath();
+    ctx.moveTo(stemBottomX, stemBottomY);
+    ctx.lineTo(stemTopX, stemTopY);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = Math.round(calculateStemLength() * 2 / 100);
+    ctx.stroke();
+
+    if (stemTopX <= flowerCenterX) {
+      stemTopX += 1.7;
+    }
+    if (stemTopY >= flowerCenterY) {
+      stemTopY -= 5;
+    }
+
+    // Animate flower bud
+    ctx.beginPath();
+    ctx.arc(stemTopX, stemTopY, Math.round((calculateStemLength() -1) * 4 / 100), 0, 2 * Math.PI, false);
+    ctx.fillStyle = 'yellow';
+    ctx.fill();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke();
+
+    // Animate flower petals
+    if (calculateStemLength() > 220) {
+      ctx.strokeStyle = 'green';
+      ctx.fillStyle = 'green';
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+
+      var flowerPetalCenterRadius = 7;
+      // Right petal
+      ctx.moveTo(stemTopX + flowerPetalCenterRadius, stemTopY);
+      ctx.quadraticCurveTo(stemTopX + 20, stemTopY + flowerPetalWidth, flowerPetal1X, flowerPetal1Y);
+      ctx.moveTo(stemTopX + flowerPetalCenterRadius, stemTopY);
+      ctx.quadraticCurveTo(stemTopX + 20, stemTopY - flowerPetalWidth, flowerPetal1X, flowerPetal1Y);
+
+      // Left petal
+      ctx.moveTo(stemTopX - flowerPetalCenterRadius, stemTopY);
+      ctx.quadraticCurveTo(stemTopX - 20, stemTopY + flowerPetalWidth, flowerPetal2X, flowerPetal2Y);
+      ctx.moveTo(stemTopX - flowerPetalCenterRadius, stemTopY);
+      ctx.quadraticCurveTo(stemTopX - 20, stemTopY - flowerPetalWidth, flowerPetal2X, flowerPetal2Y);
+
+      // Bottom petal
+      ctx.moveTo(stemTopX, stemTopY + flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX + flowerPetalWidth, stemTopY + 20, flowerPetal3X, flowerPetal3Y);
+      ctx.moveTo(stemTopX, stemTopY + flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX - flowerPetalWidth, stemTopY + 20, flowerPetal3X, flowerPetal3Y);
+
+      // Top petal
+      ctx.moveTo(stemTopX, stemTopY - flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX + flowerPetalWidth, stemTopY - 20, flowerPetal4X, flowerPetal4Y);
+      ctx.moveTo(stemTopX, stemTopY - flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX - flowerPetalWidth, stemTopY - 20, flowerPetal4X, flowerPetal4Y);
+
+      // Top-right petal
+      ctx.moveTo(stemTopX + flowerPetalCenterRadius, stemTopY - flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX + 20, stemTopY, flowerPetal5X, flowerPetal5Y);
+      ctx.moveTo(stemTopX + flowerPetalCenterRadius, stemTopY - flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX, stemTopY - 20, flowerPetal5X, flowerPetal5Y);
+
+      // Bottom-right petal
+      ctx.moveTo(stemTopX + flowerPetalCenterRadius, stemTopY + flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX + 20, stemTopY, flowerPetal6X, flowerPetal6Y);
+      ctx.moveTo(stemTopX + flowerPetalCenterRadius, stemTopY + flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX, stemTopY + 20, flowerPetal6X, flowerPetal6Y);
+
+      // Bottom-left petal
+      ctx.moveTo(stemTopX - flowerPetalCenterRadius, stemTopY + flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX, stemTopY + 20, flowerPetal7X, flowerPetal7Y);
+      ctx.moveTo(stemTopX - flowerPetalCenterRadius, stemTopY + flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX - 20, stemTopY, flowerPetal7X, flowerPetal7Y);
+
+      // Top-left petal
+      ctx.moveTo(stemTopX - flowerPetalCenterRadius, stemTopY - flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX - 20, stemTopY, flowerPetal8X, flowerPetal8Y);
+      ctx.moveTo(stemTopX - flowerPetalCenterRadius, stemTopY - flowerPetalCenterRadius);
+      ctx.quadraticCurveTo(stemTopX, stemTopY - 20, flowerPetal8X, flowerPetal8Y);
+
+      ctx.fill();
+      ctx.stroke();
+ 
+      if (flowerPetalWidth < 15) {
+        flowerPetal1X += 1;
+        flowerPetal2X -= 1;
+        flowerPetal3Y += 1;
+        flowerPetal4Y -= 1;
+        flowerPetal5X += 0.7;
+        flowerPetal5Y -= 0.7;
+        flowerPetal6X += 0.7;
+        flowerPetal6Y += 0.7;
+        flowerPetal7X -= 0.7;
+        flowerPetal7Y += 0.7;
+        flowerPetal8X -= 0.7;
+        flowerPetal8Y -= 0.7;
+        flowerPetalWidth += 0.2;
+      }
+    }
+
+    if (flowerPetalWidth > 15) {
+      clearInterval(intervalId);
+    }
+
+    debug.innerHTML = 
+      'stemBottomX: ' + stemBottomX + 
+      '<br>stemBottomY:' + stemBottomY + 
+      '<br>stemTopX: ' + stemTopX +
+      '<br>stemTopY: ' + stemTopY +
+      '<br>flowerCenterX: ' + flowerCenterX + 
+      '<br>flowerCenterY: ' + flowerCenterY + 
+      '<br>flowerPetalWidth: ' + flowerPetalWidth + 
+      '<br>stemLength: ' + calculateStemLength();
+  }
+
+  function stop() {
+    clearInterval(intervalId);
+  }
+</script>
