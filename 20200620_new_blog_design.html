@@ -1,0 +1,74 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>New blog design</title>
+    <style>
+      body {
+        background-image: url('images/elderly-man-with-full-beard-and-mustache-3756038.jpg');
+        background-position: center;
+        color: #000;
+        font-family: sans-serif;
+        font-weight: bold;
+      }
+
+      .header {
+        text-align: center;
+        height: 100px;
+      }
+
+      .header-item-container {
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        height: 100%;
+      }
+
+      .header-item {
+        float: left;
+        width: 120px;
+        font-size: 22px;
+      }
+
+      #content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        height: calc(100% - 300px);
+      }
+
+      .content-div {
+        text-align: center; 
+      }
+
+      #full-name {
+        font-size: 86px;
+      }
+
+      #description {
+        font-size: 16px;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <div class="header-item-container">
+        <div class="header-item">Om mig</div>
+        <div class="header-item">Blogg</div>
+        <div class="header-item">CV</div>
+        <div class="header-item">Portfolio</div>
+        <div class="header-item">Kontakt</div>
+      </div>
+    </div>
+
+    <div id="content">
+      <div id="full-name" class="content-div">
+        <span id="full-name">Andreas Larsson</span>
+        <br>
+        <span id="description">En webbdesigner som inte förstår hur flex-boxes funkar...</span>
+      </div>
+    </div>
+  </body>
+</html>
