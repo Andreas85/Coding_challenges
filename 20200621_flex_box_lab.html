@@ -1,0 +1,179 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Flexbox labb</title>
+
+    <style>
+      body {
+        background: lightblue;
+        text-align: center
+      }
+
+      h1 {
+        font-family: sans-serif;
+        color: #349434;
+
+      }
+      .container {
+        display: flex;
+        background: #64ccc2;
+        padding: 10px;
+      }
+
+      .container-flex-direction {
+        display: flex;
+        flex-direction: row;
+        background: #64ccc2;
+        padding: 10px;
+      }
+
+      .container-flex-wrap{
+        display: flex;
+        flex-wrap: wrap;
+        background: #64ccc2;
+        padding: 10px;
+      }
+
+      .container-justify-content {
+        display: flex;
+        justify-content: space-evenly; 
+        background: #64ccc2;
+        padding: 10px;
+      }
+
+      .container-align-items {
+        display: flex;
+        align-items: flex-end; 
+        background: #64ccc2;
+        padding: 10px;
+      }
+
+      .container-align-content {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: space-evenly; 
+        background: #64ccc2;
+        padding: 10px;
+      }
+
+      .box {
+        width: 80px;
+        min-height: 80px;
+        border: 3px;
+        border-radius: 10px;
+        background: #6262e8;
+        margin: 10px;
+        line-height: 83px;
+        font-size: 31px;
+      }
+
+      .type-of-flex-title {
+        font-size: 31px;
+        text-align: left;
+      }
+
+      .spacer-div {
+        height: 40px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Flexbox labb</h1>
+
+    <div class="type-of-flex-title">
+      En flexbox med flex-direction. Ändra i dev-tools för att testa andra properties.
+    </div>
+    <div class="container-flex-direction">
+      <div class="box">1</div>
+      <div class="box">2</div>
+      <div class="box">3</div>
+      <div class="box">4</div>
+      <div class="box">5</div>
+      <div class="box">6</div>
+      <div class="box">7</div>
+    </div>
+ 
+    <div class="spacer-div"></div>
+
+    <div class="type-of-flex-title">
+      En flexbox med flex-wrap. Ändra i dev-tools för att testa andra properties.
+    </div>
+    <div class="container-flex-wrap">
+      <div class="box">1</div>
+      <div class="box">2</div>
+      <div class="box">3</div>
+      <div class="box">4</div>
+      <div class="box">5</div>
+      <div class="box">6</div>
+      <div class="box">7</div>
+    </div>
+ 
+    <div class="spacer-div"></div>
+
+    <div class="type-of-flex-title">
+      En flexbox med justify-content. Ändra i dev-tools för att testa andra properties.
+    </div>
+    <div class="container-justify-content">
+      <div class="box">1</div>
+      <div class="box">2</div>
+      <div class="box">3</div>
+      <div class="box">4</div>
+      <div class="box">5</div>
+      <div class="box">6</div>
+      <div class="box">7</div>
+    </div>
+ 
+    <div class="spacer-div"></div>
+
+    <div class="type-of-flex-title">
+      En flexbox med align-items. Ändra i dev-tools för att testa andra properties.
+    </div>
+    <div class="container-align-items" style="height: 300px">
+      <div class="box" style="min-height: 130px">1</div>
+      <div class="box" style="min-height: 120px">2</div>
+      <div class="box" style="min-height: 160px">3</div>
+      <div class="box" style="min-height: 180px">4</div>
+      <div class="box" style="min-height: 200px">5</div>
+      <div class="box" style="min-height: 166px">6</div>
+      <div class="box" style="min-height: 99px">7</div>
+    </div>
+
+    <div class="spacer-div"></div>
+ 
+    <div class="type-of-flex-title">
+      En flexbox med align-content. Ändra i dev-tools för att testa andra properties.
+    </div>
+    <div class="container-align-content" style="height: 300px">
+      <div class="box">1</div>
+      <div class="box">2</div>
+      <div class="box">3</div>
+      <div class="box">4</div>
+      <div class="box">5</div>
+      <div class="box">6</div>
+      <div class="box">7</div>
+      <div class="box">8</div>
+      <div class="box">9</div>
+      <div class="box">10</div>
+      <div class="box">11</div>
+      <div class="box">12</div>
+      <div class="box">13</div>
+      <div class="box">14</div>
+    </div>
+
+    <div class="spacer-div"></div>
+
+    <div class="type-of-flex-title">
+      Flex items med order. Ändra i dev-tools för att testa andra properties.
+    </div>
+    <div class="container">
+      <div class="box" style="order:7">1</div>
+      <div class="box" style="order:6">2</div>
+      <div class="box" style="order:5">3</div>
+      <div class="box" style="order:4">4</div>
+      <div class="box" style="order:3">5</div>
+      <div class="box" style="order:2">6</div>
+      <div class="box" style="order:1">7</div>
+    </div>
+  </body>
+</html>
