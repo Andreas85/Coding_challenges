@@ -67,6 +67,19 @@
         font-size: 31px;
       }
 
+      .box-flex-basis {
+        min-height: 80px;
+        border: 3px;
+        border-radius: 10px;
+        background: #6262e8;
+        margin: 10px;
+        line-height: 83px;
+        font-size: 31px;
+        padding-left: 30px;
+        padding-right: 30px;
+        flex-basis: auto;
+      }
+
       .type-of-flex-title {
         font-size: 31px;
         text-align: left;
@@ -174,6 +187,47 @@
       <div class="box" style="order:3">5</div>
       <div class="box" style="order:2">6</div>
       <div class="box" style="order:1">7</div>
+    </div>
+
+    <div class="spacer-div"></div>
+
+    <div class="type-of-flex-title">
+      Flex items med grow. Ändra i dev-tools för att testa andra properties.
+    </div>
+    <div class="container">
+      <div class="box" style="flex-grow:7">1</div>
+      <div class="box" style="flex-grow:6">2</div>
+      <div class="box" style="flex-grow:5">3</div>
+      <div class="box" style="flex-grow:4">4</div>
+      <div class="box" style="flex-grow:3">5</div>
+      <div class="box" style="flex-grow:2">6</div>
+      <div class="box" style="flex-grow:1">7</div>
+    </div>
+
+    <div class="spacer-div"></div>
+
+    <div class="type-of-flex-title">
+      Flex items med shrink. Ändra i dev-tools för att testa andra properties.
+    </div>
+    <div class="container">
+      <div class="box" style="width:400px;">1</div>
+      <div class="box" style="width:400px;flex-shrink:6">2</div>
+      <div class="box" style="width:400px">3</div>
+    </div>
+
+    <div class="spacer-div"></div>
+
+    <div class="type-of-flex-title">
+      Flex items med flex-basis. Ändra i dev-tools för att testa andra properties. (OBS fattar inte än)
+    </div>
+    <div class="container">
+      <div class="box-flex-basis">1</div>
+      <div class="box-flex-basis">2 lalalallalalala</div>
+      <div class="box-flex-basis">3</div>
+      <div class="box-flex-basis">4 jfeij12</div>
+      <div class="box-flex-basis">5 ohohfijoijfdoisjoi</div>
+      <div class="box-flex-basis">6</div>
+      <div class="box-flex-basis">7</div>
     </div>
   </body>
 </html>
