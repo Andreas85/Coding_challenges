@@ -77,19 +77,20 @@ class YewTree {
     }
 }
 
+
 class Means {
     public $cost;
     public $available;
     public $unit;
     public $getsUsedUpInProduction;
 
-    public function __construct($available, $hours, $unit, $getsUsedUpInProduction = true) {
+    public function __construct($available, $cost, $unit, $getsUsedUpInProduction = true) {
         if ($available !== null) {
             $this->available = $available;
         }
 
-        if ($hours !== null) {
-            $this->cost = $hours;
+        if ($cost !== null) {
+            $this->cost = $cost;
         }
 
         $this->getsUsedUpInProduction = $getsUsedUpInProduction;
@@ -101,15 +102,28 @@ class Time extends Means {
 }
 
 class Axe extends Means {
-    
+
 }
 
 class FishingLine extends Means {
-    
+
 }
 
 class Hook extends Means {
-    
+
+}
+
+class Wood extends Means {
+    public $unit;
+    public $quantity;
+
+/*
+    public function __construct($quantity, $unit) {
+        echo "Spawning wood\n";
+        $this->unit = $unit;
+        $this->quantity = $quantity;
+    }
+*/
 }
 
 class Human {
@@ -117,9 +131,9 @@ class Human {
 
     public function __construct() {
         $this->means[] = new Time(24, null, 'hours'); 
-        $this->means[] = new Axe('', 1, '', false);
-        $this->means[] = new FishingLine('', 1, '', false);
-        $this->means[] = new Hook('', 1, '', false);
+        $this->means[] = new Axe(1, null, '', false);
+        $this->means[] = new FishingLine(1, null, '', false);
+        $this->means[] = new Hook(1, null, '', false);
     }
 
     public function addMeans(Means $means) {
@@ -132,36 +146,72 @@ class Human {
         echo "Available means:\n";
         if (isset($this->means)) {
             foreach ($this->means as $mean) {
-                echo "  " . $mean->quantity. " ";
-                echo get_class($mean) . " ";
-                echo $mean->unit . "\n";
+                echo "  " . $mean->available . " ";
+                echo $mean->unit . " ";
+                echo get_class($mean) . "\n";
             }
         }
+        echo "\n\n";
     }
 
     public function takeAction(Labor $labor) {
         echo "Human engaging in labor " . get_class($labor) . "\n";
+
         if (isset($labor->requiredMeans)) {
             echo "Cost of labor: \n";
-            foreach ($labor->requiredMeans as $mean) {
-                echo "  * " . get_class($mean) . ": " . $mean->cost . " " . $mean->unit . "\n";
+            $requirementOfMeansCount = 0;
+            foreach ($labor->requiredMeans as $requiredMean) {
+                echo "  * " . get_class($requiredMean) . ": " . $requiredMean->cost . " " . $requiredMean->unit . "\n";
+
+                foreach ($this->means as $availableMean) {
+                    if (get_class($requiredMean) == get_class($availableMean)) {
+                        //echo get_class($requiredMean) . " available in human means \n";
+                        //echo "cost: " . $requiredMean->cost . " available: " . $availableMean->available . "\n";
+                        if ($availableMean->available >= $requiredMean->cost) {
+                            //echo "Enough means available to perform action\n";
+                            $requirementOfMeansCount++;
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            if ($requirementOfMeansCount == count($labor->requiredMeans)) {
+                echo "  * All mean requirements passed\n";
+            } else {
+                echo "  * Not enough means to perform action\n";
             }
         }
+
+        foreach ($labor->requiredMeans as $requiredMean) {
+            foreach ($this->means as $availableMean) {
+                if (get_class($requiredMean) == get_class($availableMean) && $requiredMean->getsUsedUpInProduction) {
+                    $availableMean->available -= $requiredMean->cost;
+                    continue;
+                }
+            }
+        }
+
+        $this->means[] = $labor->reward;
     }
 }
 
 class Labor {
     public $requiredMeans;
+    public $reward;
 
     public function __construct($name) {
     }
 }
 
 class ChopDownTree extends Labor {
-    public function __construct($landObjectIndex) {
+    public function __construct(&$land, $landObjectIndex) {
         $this->requiredMeans[] = new Time(null, 5, 'hours');
         $this->requiredMeans[] = new Axe(null, 1, '', false);
-        print_r($land->objects[$langObjectIndex]);
+
+        $this->reward = new Wood($land->objects[$landObjectIndex]->quantity, null, $land->objects[$landObjectIndex]->unit);
+
+        unset($land->objects[$landObjectIndex]);
     }
 }
 
@@ -169,6 +219,5 @@ $land = new Land();
 
 $human1 = new Human();
 $human1->showHuman();
-$human1->takeAction(new ChopDownTree($land->find('YewTree')));
-
-
+$human1->takeAction(new ChopDownTree($land, $land->find('YewTree')));
+$human1->showHuman();
