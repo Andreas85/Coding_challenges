@@ -19,7 +19,7 @@ class Land {
     public function find($objectToLocate) {
         foreach ($this->objects as $key => $obj) {
             if (get_class($obj) === $objectToLocate) {
-                return $key; 
+                return $key;
             }
         }
         return false;
@@ -31,19 +31,13 @@ class Lake {
 
     public function __construct() {
         echo "Spawning lake\n";
-        $this->fish[] = new Fish();
-        $this->fish[] = new Fish();
-        $this->fish[] = new Fish();
-        $this->fish[] = new Fish();
-        $this->fish[] = new Fish();
-        $this->fish[] = new Fish();
-        $this->fish[] = new Fish();
-    }
-}
-
-class Fish {
-    public function __construct() {
-        echo "Spawning fish\n";
+        $this->fish[] = new Fish(1, null, '');
+        $this->fish[] = new Fish(1, null, '');
+        $this->fish[] = new Fish(1, null, '');
+        $this->fish[] = new Fish(1, null, '');
+        $this->fish[] = new Fish(1, null, '');
+        $this->fish[] = new Fish(1, null, '');
+        $this->fish[] = new Fish(1, null, '');
     }
 }
 
@@ -114,23 +108,22 @@ class Hook extends Means {
 }
 
 class Wood extends Means {
-    public $unit;
-    public $quantity;
 
-/*
-    public function __construct($quantity, $unit) {
-        echo "Spawning wood\n";
-        $this->unit = $unit;
-        $this->quantity = $quantity;
-    }
-*/
+}
+
+class Fish extends Means {
+}
+
+
+class FishingPole extends Means {
+
 }
 
 class Human {
     public $means;
 
     public function __construct() {
-        $this->means[] = new Time(24, null, 'hours'); 
+        $this->means[] = new Time(24, null, 'hours');
         $this->means[] = new Axe(1, null, '', false);
         $this->means[] = new FishingLine(1, null, '', false);
         $this->means[] = new Hook(1, null, '', false);
@@ -154,14 +147,24 @@ class Human {
         echo "\n\n";
     }
 
+    private function addReward(Means $reward) {
+        foreach ($this->means as $key => $mean) {
+            if (get_class($reward) === get_class($mean)) {
+                $this->means[$key]->available += $reward->available;
+                return true;
+            }
+        }
+        $this->means[] = $reward;
+    }
+
     public function takeAction(Labor $labor) {
         echo "Human engaging in labor " . get_class($labor) . "\n";
 
         if (isset($labor->requiredMeans)) {
-            echo "Cost of labor: \n";
+            //echo "Cost of labor: \n";
             $requirementOfMeansCount = 0;
             foreach ($labor->requiredMeans as $requiredMean) {
-                echo "  * " . get_class($requiredMean) . ": " . $requiredMean->cost . " " . $requiredMean->unit . "\n";
+                //echo "  * " . get_class($requiredMean) . ": " . $requiredMean->cost . " " . $requiredMean->unit . "\n";
 
                 foreach ($this->means as $availableMean) {
                     if (get_class($requiredMean) == get_class($availableMean)) {
@@ -177,7 +180,7 @@ class Human {
             }
 
             if ($requirementOfMeansCount == count($labor->requiredMeans)) {
-                echo "  * All mean requirements passed\n";
+                //echo "  * All mean requirements passed\n";
             } else {
                 echo "  * Not enough means to perform action\n";
             }
@@ -192,21 +195,20 @@ class Human {
             }
         }
 
-        $this->means[] = $labor->reward;
+        if ($labor->reward !== null) {
+            $this->addReward($labor->reward);
+        }
     }
 }
 
 class Labor {
     public $requiredMeans;
     public $reward;
-
-    public function __construct($name) {
-    }
 }
 
 class ChopDownTree extends Labor {
     public function __construct(&$land, $landObjectIndex) {
-        $this->requiredMeans[] = new Time(null, 5, 'hours');
+        $this->requiredMeans[] = new Time(null, 2, 'hours');
         $this->requiredMeans[] = new Axe(null, 1, '', false);
 
         $this->reward = new Wood($land->objects[$landObjectIndex]->quantity, null, $land->objects[$landObjectIndex]->unit);
@@ -215,9 +217,36 @@ class ChopDownTree extends Labor {
     }
 }
 
+class MakeFishingPole extends Labor {
+    public function __construct() {
+        $this->requiredMeans[] = new Time(null, 3, 'hours');
+        $this->requiredMeans[] = new Axe(null, 1, '', false);
+        $this->requiredMeans[] = new Wood(null, 2, 'kg');
+
+        $this->reward = new FishingPole(1, null, '');
+    }
+}
+
+class GoFishing extends Labor {
+    public function __construct($durationHours) {
+        $this->requiredMeans[] = new Time(null, $durationHours, 'hours');
+        $this->requiredMeans[] = new FishingPole(null, 1, '', false);
+        $this->requiredMeans[] = new FishingLine(null, 1, '', false);
+        $this->requiredMeans[] = new Hook(null, 1, '', false);
+
+        if (rand(0, 1) == 1) {
+            $this->reward = new Fish(1, null, '');
+        }
+    }
+}
+
 $land = new Land();
 
 $human1 = new Human();
 $human1->showHuman();
 $human1->takeAction(new ChopDownTree($land, $land->find('YewTree')));
+$human1->showHuman();
+$human1->takeAction(new MakeFishingPole());
+$human1->takeAction(new MakeFishingPole());
+$human1->takeAction(new GoFishing(3));
 $human1->showHuman();
