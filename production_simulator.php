@@ -46,17 +46,11 @@ class CoconutTree {
 
     public function __construct() {
         echo "Spawning coconut tree\n";
-        $this->coconuts[] = new Coconut();
-        $this->coconuts[] = new Coconut();
-        $this->coconuts[] = new Coconut();
-        $this->coconuts[] = new Coconut();
-        $this->coconuts[] = new Coconut();
-    }
-}
-
-class Coconut {
-    public function __construct() {
-        echo "Spawning coconut\n";
+        $this->coconuts[] = new Coconut(1, null, '');
+        $this->coconuts[] = new Coconut(1, null, '');
+        $this->coconuts[] = new Coconut(1, null, '');
+        $this->coconuts[] = new Coconut(1, null, '');
+        $this->coconuts[] = new Coconut(1, null, '');
     }
 }
 
@@ -93,40 +87,53 @@ class Means {
 }
 
 class Time extends Means {
+    const tradable = false;
 }
 
 class Axe extends Means {
+    const tradable = true;
+}
 
+class Knife extends Means {
+    const tradable = true;
 }
 
 class FishingLine extends Means {
-
+    const tradable = true;
 }
 
 class Hook extends Means {
-
+    const tradable = true;
 }
 
 class Wood extends Means {
-
+    const tradable = true;
 }
 
 class Fish extends Means {
+    const tradable = true;
 }
 
 
 class FishingPole extends Means {
+    const tradable = true;
+}
 
+class Coconut extends Means{
+    const tradable = true;
 }
 
 class Human {
+    public $name;
     public $means;
 
-    public function __construct() {
-        $this->means[] = new Time(24, null, 'hours');
-        $this->means[] = new Axe(1, null, '', false);
-        $this->means[] = new FishingLine(1, null, '', false);
-        $this->means[] = new Hook(1, null, '', false);
+    public $skills;
+    public $values;
+
+    public function __construct($name) {
+        $this->name = $name;
+        $this->skills["PickCoconuts"] = rand(0, 10);
+        $this->skills["GoFishing"] = rand(0, 10);
     }
 
     public function addMeans(Means $means) {
@@ -135,13 +142,20 @@ class Human {
 
     public function showHuman() {
         echo "\n\n";
-        echo "Human:\n";
+        echo $this->name . ":\n";
         echo "Available means:\n";
         if (isset($this->means)) {
             foreach ($this->means as $mean) {
                 echo "  " . $mean->available . " ";
                 echo $mean->unit . " ";
                 echo get_class($mean) . "\n";
+            }
+        }
+        echo "\n\n";
+        echo "Skills:\n";
+        if (isset($this->skills)) {
+            foreach ($this->skills as $key => $skill) {
+                echo $key . " (" . $skill . ")\n";
             }
         }
         echo "\n\n";
@@ -165,7 +179,6 @@ class Human {
             $requirementOfMeansCount = 0;
             foreach ($labor->requiredMeans as $requiredMean) {
                 //echo "  * " . get_class($requiredMean) . ": " . $requiredMean->cost . " " . $requiredMean->unit . "\n";
-
                 foreach ($this->means as $availableMean) {
                     if (get_class($requiredMean) == get_class($availableMean)) {
                         //echo get_class($requiredMean) . " available in human means \n";
@@ -228,25 +241,99 @@ class MakeFishingPole extends Labor {
 }
 
 class GoFishing extends Labor {
-    public function __construct($durationHours) {
+    public function __construct($durationHours, $skills) {
         $this->requiredMeans[] = new Time(null, $durationHours, 'hours');
         $this->requiredMeans[] = new FishingPole(null, 1, '', false);
         $this->requiredMeans[] = new FishingLine(null, 1, '', false);
         $this->requiredMeans[] = new Hook(null, 1, '', false);
 
-        if (rand(0, 1) == 1) {
-            $this->reward = new Fish(1, null, '');
+        for ($a = 0, $fishCaught = 0; $a < $durationHours; $a++) {
+            if (rand(0, 10) <= $skills) {
+                $fishCaught++;
+            }
+        }
+
+        if ($fishCaught) {
+            $this->reward = new Fish($fishCaught, null, '');
+        }
+    }
+}
+
+class PickCoconuts extends Labor {
+    public function __construct($durationHours, $skills) {
+        $this->requiredMeans[] = new Time(null, 1, 'hours');
+        $this->requiredMeans[] = new Knife(null, 1, '', false);
+
+        for ($a = 0, $coconutsPicked = 0; $a < $durationHours; $a++) {
+            if (rand(0, 10) <= $skills) {
+                $coconutsPicked++;
+            }
+        }
+
+        if ($coconutsPicked) {
+            $this->reward = new Coconut($coconutsPicked, null, '');
+        }
+    }
+}
+
+/*
+class Trade extends Labor {
+    public function __construct() {
+        $this->requiredMeans[] = new Time(null, 1, 'hours');
+
+    }
+}
+*/
+
+class Market {
+    private array $traders;
+
+    public function __construct() {
+
+    }
+
+    public function addTrader(Human $trader) {
+        $this->traders[] = $trader;
+    }
+
+    public function showTraders() {
+        echo "Traders in market:\n";
+        foreach ($this->traders as $trader) {
+            echo "<b>" . $trader->name . "</b>\n";
+            foreach ($trader->means as $mean) {
+                if ($mean::tradable) {
+                    echo $mean->available . " " . get_class($mean) . "\n";
+                }
+            }
+            echo "\n";
         }
     }
 }
 
 $land = new Land();
 
-$human1 = new Human();
+$human1 = new Human('Charlie');
+
+$human1->addMeans(new Time(24, null, 'hours'));
+$human1->addMeans(new Axe(1, null, '', false));
+$human1->addMeans(new FishingLine(1, null, '', false));
+$human1->addMeans(new Hook(1, null, '', false));
+
 $human1->showHuman();
 $human1->takeAction(new ChopDownTree($land, $land->find('YewTree')));
 $human1->showHuman();
 $human1->takeAction(new MakeFishingPole());
 $human1->takeAction(new MakeFishingPole());
-$human1->takeAction(new GoFishing(3));
+$human1->takeAction(new GoFishing(3, $human1->skills['GoFishing']));
 $human1->showHuman();
+
+$human2 = new Human('Stephanie');
+$human2->addMeans(new Time(24, null, 'hours'));
+$human2->addMeans(new Knife(1, null, '', false));
+$human2->takeAction(new PickCoconuts(10, $human2->skills['PickCoconuts']));
+$human2->showHuman();
+
+$market = new Market();
+$market->addTrader($human1);
+$market->addTrader($human2);
+$market->showTraders();
