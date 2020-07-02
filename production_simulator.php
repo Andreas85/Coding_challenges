@@ -1,5 +1,10 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="css/economics_simulator.css">
+  </head>
+<body>
+<pre>
 <?php
-echo "<pre>";
 
 class Land {
     public $objects;
@@ -173,6 +178,8 @@ class Human {
 
     public function takeAction(Labor $labor) {
         echo "Human engaging in labor " . get_class($labor) . "\n";
+        echo "Human name: " . $this->name . "\n";
+        EconomicObserver::observAction($this->name, get_class($labor));
 
         if (isset($labor->requiredMeans)) {
             //echo "Cost of labor: \n";
@@ -215,12 +222,17 @@ class Human {
 }
 
 class Labor {
+    public function __construct() {
+        echo "Labor construct\n";
+    }
     public $requiredMeans;
     public $reward;
 }
 
 class ChopDownTree extends Labor {
     public function __construct(&$land, $landObjectIndex) {
+        parent::__construct();
+
         $this->requiredMeans[] = new Time(null, 2, 'hours');
         $this->requiredMeans[] = new Axe(null, 1, '', false);
 
@@ -232,6 +244,8 @@ class ChopDownTree extends Labor {
 
 class MakeFishingPole extends Labor {
     public function __construct() {
+        parent::__construct();
+
         $this->requiredMeans[] = new Time(null, 3, 'hours');
         $this->requiredMeans[] = new Axe(null, 1, '', false);
         $this->requiredMeans[] = new Wood(null, 2, 'kg');
@@ -242,6 +256,8 @@ class MakeFishingPole extends Labor {
 
 class GoFishing extends Labor {
     public function __construct($durationHours, $skills) {
+        parent::__construct();
+
         $this->requiredMeans[] = new Time(null, $durationHours, 'hours');
         $this->requiredMeans[] = new FishingPole(null, 1, '', false);
         $this->requiredMeans[] = new FishingLine(null, 1, '', false);
@@ -261,6 +277,8 @@ class GoFishing extends Labor {
 
 class PickCoconuts extends Labor {
     public function __construct($durationHours, $skills) {
+        parent::__construct();
+
         $this->requiredMeans[] = new Time(null, 1, 'hours');
         $this->requiredMeans[] = new Knife(null, 1, '', false);
 
@@ -286,7 +304,7 @@ class Trade extends Labor {
 */
 
 class Market {
-    private array $traders;
+    private $traders;
 
     public function __construct() {
 
@@ -310,7 +328,48 @@ class Market {
     }
 }
 
+class Subject {
+    public $name;
+
+    public function __construct($name) {
+        echo '<span class="observer">Subject initialized</span>';
+        $this->name = $name;
+    }
+}
+
+class ValueScale {
+    public function __construct() {
+        echo '<span class="observer">Economic observer initialized</span>';
+    }
+
+    public static function createScale() {
+        $vs = new self;
+    }
+}
+
+class EconomicObserver {
+    public static $subjects = [];
+
+    public static $valueScales = [];
+
+    public function __construct() {
+        echo '<span class="observer">Economic observer initialized</span>';
+    }
+
+    public static function addSubject(Subject $subject) {
+        self::$subjects[] = $subject;
+    }
+
+    public static function observAction($name, $action) {
+        echo '<span class="observer">Actor ' . $name . ' valued the action ' . $action . ' more than anything else at this time</span>';
+    }
+
+}
+
 $land = new Land();
+
+EconomicObserver::addSubject(new Subject('Charlie'));
+EconomicObserver::addSubject(new Subject('Stephanie'));
 
 $human1 = new Human('Charlie');
 
@@ -337,3 +396,4 @@ $market = new Market();
 $market->addTrader($human1);
 $market->addTrader($human2);
 $market->showTraders();
+
