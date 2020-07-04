@@ -1,0 +1,93 @@
+<html lang=en>
+<head>
+  <meta charset=utf-8>
+  <title>Present simulation data</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <style>
+    #mycanvas {
+      border: 1px solid purple;
+    }
+    body {
+      text-align: center;
+      margin-top: 200px;
+    }
+    #debug {
+      display: none;
+      width: 400px;
+      height: 600px;
+      background: white;
+      position: absolute;
+      right: 0px;
+      top: 150px;
+      border: 3px solid gray;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body style="background:black" onload="init()">
+  <canvas id="mycanvas" width="600" height="500"></canvas>
+  <div id="debug"></div>
+</body>
+
+<script>
+  var canvas, ctx, container;
+  canvas = document.getElementById('mycanvas');
+  ctx = canvas.getContext("2d");
+  var debug = document.getElementById('debug');
+  var intervalId;
+
+  var centerX = canvas.width/2;
+  var centerY = canvas.height/2;
+
+
+  var leaves = Array();
+
+  function init(){
+    getSimulationData();
+  }
+
+  function draw(simulationData){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.beginPath();
+    ctx.arc(simulationData.circleXpos, simulationData.circleXpos, 80, 0, 2 * Math.PI, false);
+    ctx.fillStyle = '#123544';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#CCC111';
+    ctx.stroke();
+
+
+    debug.innerHTML =
+      'pointerLine.angle: ' + 123 +
+      '<br>tempX: ' + '123' +
+      '<br>tempY: ' + 'kjoi' ;
+  }
+
+  function getSimulationData() {
+    var simulationData = '';
+
+    $.ajax({
+      url: "20200704_get_simulation_data.php",
+      type: "post",
+      dataType: 'json',
+      data: {
+        page: '',
+      },
+      success: function (response) {
+        console.log(response);
+        canvas.width = response.mapWidth;
+        canvas.height = response.mapHeight;
+        draw(response);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+         console.log(textStatus, errorThrown);
+      }
+    });
+  }
+
+  function stop() {
+    clearInterval(intervalId);
+  }
+</script>
