@@ -1,0 +1,126 @@
+<html lang=en>
+<head>
+  <meta charset=utf-8>
+  <title>Present simulation data</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <style>
+    #mycanvas {
+      border: 1px solid purple;
+    }
+    body {
+      text-align: center;
+      margin-top: 200px;
+    }
+    #debug {
+      display: none;
+      width: 400px;
+      height: 600px;
+      background: white;
+      position: absolute;
+      right: 0px;
+      top: 200px;
+      border: 0px solid gray;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body style="background:black" onload="init()">
+  <canvas id="mycanvas" width="800" height="600"></canvas>
+  <div id="debug"></div>
+</body>
+
+<script>
+  var canvas, ctx, container;
+  canvas = document.getElementById('mycanvas');
+  ctx = canvas.getContext("2d");
+  var debug = document.getElementById('debug');
+  var intervalId;
+
+  var centerX = canvas.width/2;
+  var centerY = canvas.height/2;
+
+  var grid;
+
+  var leaves = Array();
+
+  function init(){
+    getSimulationData();
+  }
+
+  function draw(simulationData){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    //console.log(simulationData[0]);
+
+    grid = simulationData.grid;
+
+    for (var y = 0; y < 60; y++) {
+      for (var x = 0; x < 80; x++) {
+        ctx.beginPath();
+        ctx.rect(x * 10, y * 10, 10, 10);
+        if (grid[y][x] == 'G') {
+          ctx.fillStyle = '#cc3300';
+          ctx.strokeStyle = 'black';
+        } else if (grid[y][x] == 'W') {
+          ctx.fillStyle = 'blue';
+          ctx.strokeStyle = 'black';
+        } else if (grid[y][x] == 'T') {
+          ctx.fillStyle = 'white';
+          ctx.strokeStyle = 'black';
+        } else if (grid[y][x] == 'L') {
+          ctx.fillStyle = '#0099ff';
+          ctx.strokeStyle = 'black';
+        }
+
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+
+    for (var y = 0; y < 60; y++) {
+      for (var x = 0; x < 80; x++) {
+
+        if (grid[y][x] == 'T') { 
+          ctx.beginPath();
+          ctx.arc(x * 10 + 5, y * 10 + 5, 7, 0, 2 * Math.PI, false);
+          ctx.fillStyle = 'green';
+          ctx.fill();
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = '#003300';
+          ctx.stroke();
+        }
+        
+      }
+    }
+
+    debug.innerHTML =
+      'pointerLine.angle: ' + 123 +
+      '<br>tempX: ' + '123' +
+      '<br>tempY: ' + 'kjoi' ;
+  }
+
+  function getSimulationData() {
+    $.ajax({
+      url: "20200705_sim_data.php",
+      type: "post",
+      dataType: 'json',
+      data: {
+        page: '',
+      },
+      success: function (response) {
+        console.log(response.grid);
+        draw(response);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+         console.log(textStatus, errorThrown);
+      }
+    });
+  }
+
+  function stop() {
+    clearInterval(intervalId);
+  }
+</script>
