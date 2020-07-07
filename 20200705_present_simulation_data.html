@@ -27,7 +27,9 @@
 
 <body style="background:black" onload="init()">
   <canvas id="mycanvas" width="800" height="600"></canvas>
-  <div id="debug"></div>
+  <div id="debug"></div><br>
+  <input type="button" value="Uppdatera" onclick="init()"><br>
+  <input type="button" value="Ge creature 1 idén att gå till ett träd" onclick="sendCommand('creature1gototree')">
 </body>
 
 <script>
@@ -54,6 +56,8 @@
     //console.log(simulationData[0]);
 
     grid = simulationData.grid;
+    creatures = simulationData.creatures;
+    trees = simulationData.objects.trees;
 
     for (var y = 0; y < 60; y++) {
       for (var x = 0; x < 80; x++) {
@@ -79,21 +83,26 @@
       }
     }
 
+    for (var a = 0; a < trees.length; a++) {
+      ctx.beginPath();
+      ctx.arc(trees[a].x * 10 + 5, trees[a].y * 10 + 5, 7, 0, 2 * Math.PI, false);
+      ctx.fillStyle = 'green';
+      ctx.fill();
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = '#003300';
+      ctx.stroke();
+    }
 
-    for (var y = 0; y < 60; y++) {
-      for (var x = 0; x < 80; x++) {
-
-        if (grid[y][x] == 'T') { 
-          ctx.beginPath();
-          ctx.arc(x * 10 + 5, y * 10 + 5, 7, 0, 2 * Math.PI, false);
-          ctx.fillStyle = 'green';
-          ctx.fill();
-          ctx.lineWidth = 5;
-          ctx.strokeStyle = '#003300';
-          ctx.stroke();
-        }
-        
-      }
+    console.log(creatures);
+    for (var a = 0; a < creatures.length; a++) {
+        console.log(creatures[a]);
+        ctx.beginPath();
+        ctx.arc(creatures[a].x * 10 + 5, creatures[a].y * 10 + 5, 7, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#003300';
+        ctx.stroke();
     }
 
     debug.innerHTML =
@@ -113,6 +122,23 @@
       success: function (response) {
         console.log(response.grid);
         draw(response);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+         console.log(textStatus, errorThrown);
+      }
+    });
+  }
+
+  function sendCommand() {
+    $.ajax({
+      url: "20200705_sim_data.php",
+      type: "post",
+      dataType: 'json',
+      data: {
+        command: 'creature1gototree',
+      },
+      success: function (response) {
+        console.log(response);
       },
       error: function(jqXHR, textStatus, errorThrown) {
          console.log(textStatus, errorThrown);

@@ -2,9 +2,17 @@
 $database = "20200705_simulation";
 include '../config/coding_challenges_database.php';
 
-$sql = "select * from simulation_data";
+$sql = "select * from simulation_data order by datetime desc";
 $result = $conn->query($sql);
 
+$commands = [];
+
+if (isset($_POST['command'])) {
+    if ($_POST['command'] === 'giveIdea' && $_POST['idea'] == 'walkToTree' && isset($_POST['creature']) && is_numeric($_POST['creature'])) {
+    }
+
+    exit;
+}
 
 if (isset($_GET['fetch'])) {
     while ($row = $result->fetch_assoc()) {
@@ -18,11 +26,7 @@ class Land {
     public static $grid;
 
     public static function initialize() {
-        //echo "Initializing Land object\n";
         $land = new self;
-        //$land->$grid['width'] = 80;
-        //$land->$grid['height'] = 60;
-        //print_r($land->$grid);
         $width = 80;
         $height = 60;
 
@@ -68,7 +72,7 @@ class Land {
             37 => [10, 70],
             38 => [15, 72],
             39 => [13, 76],
-            40 => [19, 76], 
+            40 => [19, 76],
             41 => [20, 75],
             42 => [23, 68],
             43 => [16, 69],
@@ -90,14 +94,6 @@ class Land {
                 self::$grid[$y][$x] = 'G';
             }
         }
-    
-        self::$grid[18][20] = 'T';
-        self::$grid[20][40] = 'T';
-        self::$grid[15][60] = 'T';
-        self::$grid[28][54] = 'T';
-        self::$grid[36][20] = 'T';
-        self::$grid[37][28] = 'T';
-        self::$grid[44][32] = 'T';
 
         $lake = [
             34 => [46, 50],
@@ -113,10 +109,56 @@ class Land {
             }
         }
 
-    } 
+    }
 
     public static function getGrid() {
         return self::$grid;
+    }
+}
+
+class Creature {
+    public $positionX;
+    public $positionY;
+
+    public function __construct($positionX, $positionY) {
+        $this->positionX = $positionX;
+        $this->positionY = $positionY;
+    }
+
+    public function getPosition() {
+        return [
+            'x' => $this->positionX,
+            'y' => $this->positionY,
+        ];
+    }
+
+    public function stepRight() {
+        $this->positionX++;
+    }
+}
+
+class Objects {
+
+    public function __construct() {
+
+    }
+
+}
+
+class Tree extends Objects {
+    public $positionX;
+    public $positionY;
+
+    public function __construct($positionX, $positionY) {
+        $this->positionX = $positionX;
+        $this->positionY = $positionY;
+    }
+
+    public function getPosition() {
+        return [
+            'x' => $this->positionX,
+            'y' => $this->positionY,
+        ];
     }
 }
 
@@ -124,6 +166,58 @@ Land::initialize();
 
 $grid = Land::getGrid();
 
-echo json_encode([
-    'grid' => $grid
-]);
+$creatures = [];
+$trees = [];
+
+if (!$result->num_rows) {
+    $creatures = [
+        new Creature(30,40),
+        new Creature(50,48)
+    ];
+
+    $trees = [
+        new Tree(21,19),
+        new Tree(20,35),
+        new Tree(50,20),
+        new Tree(28,42),
+        new Tree(36,20),
+        new Tree(37,28),
+        new Tree(44,32),
+    ];
+} else {
+    $row = $result->fetch_assoc();
+    $data = json_decode($row['data']);
+
+    foreach ($data->objects->trees as $tree) {
+        $trees[] = new Tree($tree->x, $tree->y);
+    }
+
+    foreach ($data->creatures as $creature) {
+        $creatures[] = new Creature($creature->x, $creature->y);
+    }
+}
+
+$creatures[0]->stepRight();
+
+$outputCreatures = [];
+foreach ($creatures as $creature) {
+    $outputCreatures[] = $creature->getPosition();
+}
+
+$outputTrees = [];
+foreach ($trees as $tree) {
+    $outputTrees[] = $tree->getPosition();
+}
+
+$output = [
+    'creatures' => $outputCreatures,
+    'objects' => [
+        'trees' => $outputTrees
+    ]
+];
+
+$sql = "insert into simulation_data (data) values ('" . json_encode($output) . "')";
+$result = $conn->query($sql);
+
+$output['grid'] = $grid;
+echo json_encode($output);
