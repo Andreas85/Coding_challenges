@@ -7,11 +7,11 @@ $result = $conn->query($sql);
 
 $commands = [];
 
-if (isset($_POST['command'])) {
-    if ($_POST['command'] === 'giveIdea' && $_POST['idea'] == 'walkToTree' && isset($_POST['creature']) && is_numeric($_POST['creature'])) {
-    }
+$_POST['command'] = 'giveIdeaWalkToTreeCreature0';
 
-    exit;
+if (isset($_POST['command']) && $_POST['command'] === 'giveIdeaWalkToTreeCreature0') {
+    //echo json_encode('giveIdeaWalkToTreeCreature0');
+    $commands[] = 'giveIdeaWalkToTreeCreature0';
 }
 
 if (isset($_GET['fetch'])) {
@@ -119,10 +119,14 @@ class Land {
 class Creature {
     public $positionX;
     public $positionY;
+    public $mind;
 
-    public function __construct($positionX, $positionY) {
+    public function __construct($positionX, $positionY, $thought = null) {
         $this->positionX = $positionX;
         $this->positionY = $positionY;
+        if (is_object($thought)) {
+            $this->mind[] = $thought;
+        }
     }
 
     public function getPosition() {
@@ -132,9 +136,31 @@ class Creature {
         ];
     }
 
+    public function getIdea($idea) {
+        $this->mind[] = $idea;
+    }
+
+    public function moveTo($x, $y) {
+        echo "monving";
+echo $x. " ".$y;
+    }
+
     public function stepRight() {
         $this->positionX++;
     }
+}
+
+
+
+
+
+class Thought {
+    public $components;
+
+    public function __construct($components) {
+        $this->components = $components; 
+    }
+
 }
 
 class Objects {
@@ -197,7 +223,31 @@ if (!$result->num_rows) {
     }
 }
 
-$creatures[0]->stepRight();
+//$creatures[0]->stepRight();
+
+
+if (in_array('giveIdeaWalkToTreeCreature0', $commands)) {
+    echo json_encode('yes');
+    $idea = new Thought(['walk to', 'tree', 21, 19]);
+    $creatures[0]->getIdea($idea);
+
+}
+
+echo "<pre>";
+print_r($creatures);
+
+foreach ($creatures as $creature) {
+    if (in_array('walk to', $creature->mind[0]->components) && in_array('tree', $creature->mind[0]->components)) {
+        $creature->moveTo($creature->mind[0]->components[2], $creature->mind[0]->components[3]);
+    }
+}
+
+
+echo "\n\nexit";
+exit;
+
+// ---------
+// Output
 
 $outputCreatures = [];
 foreach ($creatures as $creature) {
